@@ -14,8 +14,8 @@ use vars qw/$VERSION/;
 
 $VERSION = '0.0.1';
 
-use constant FILES_DIR => '/var/www/moralmaze';
-use constant WEBROOT => 'http://tefd.co.uk/podcast/moralmaze';
+use constant FILES_DIR => '/var/www/podcasts/moralmaze';
+use constant WEBROOT => 'http://tefd.co.uk/podcasts/moralmaze';
 
 unless (-d FILES_DIR) {
 	mkpath FILES_DIR;
