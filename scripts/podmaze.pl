@@ -10,6 +10,10 @@ use File::stat;
 use POSIX qw/strftime/;
 use XML::RSS;
 
+use vars qw/$VERSION/;
+
+$VERSION = '0.0.1';
+
 use constant FILES_DIR => '/var/www/moralmaze';
 use constant WEBROOT => 'http://tefd.co.uk/moralmaze';
 
@@ -21,12 +25,14 @@ chdir FILES_DIR;
 
 system('echo no | get-iplayer --get "moral maze" --type radio >/dev/null 2>/dev/null');
 
-my $rss = new XML::RSS( version => '2.0' );
+my $rss = XML::RSS->(version => '2.0');
 
 $rss->channel(
     title => 'BBC Radio 4 - Moral Maze',
     description => 'Combative, provocative and engaging live debate examining the moral issues behind one of the week\'s news stories. Chaired by Michael Buerk.',
-    link  => 'http://www.bbc.co.uk/programmes/b006qk11'
+    link  => 'http://www.bbc.co.uk/programmes/b006qk11',
+    language => 'en',
+    lastBuildDate  => strftime('%a, %d %b %Y %T %z', gmtime(time)),
 );
 
 $rss->image(
@@ -38,25 +44,26 @@ $rss->image(
 
 opendir DIR, FILES_DIR;
 
-foreach my $episode (sort grep { /\.aac$/ } readdir DIR) {
-	my @date = ($episode =~ /(\d{2})_(\d{2})_(\d{4})/);
+my @files =  sort { -M FILES_DIR . "/$a" <=> -M FILES_DIR . "/$b" } grep { /\.aac$/ } readdir(DIR);
+
+foreach my $episode (@files) {
+	my @filetime = gmtime(stat($episode)->mtime);
 	
 	my $url = WEBROOT . '/' . $episode;
 	
-	my $date_str = join('/', @date);
-	
-	my $file_stat = stat($episode);
+	my $date_str = strftime('%a, %d %b %Y', @filetime);
 	
 	$rss->add_item(
         title => "Moral Maze - $date_str",
         description => "Moral Maze from $date_str",
         link => $url,
-        pubDate => strftime('%c', gmtime($file_stat->mtime)),
+        pubDate => strftime('%a, %d %b %Y %T %z', @filetime),
         enclosure => {
         	url => $url,
         	length => -s $episode,
         	type => mimetype($episode)
-        }
+        },
+        permaLink => $url
     );
 }
 

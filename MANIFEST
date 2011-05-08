@@ -1,7 +1,5 @@
 Changes
 Makefile.PL
 MANIFEST
-podmaze.pl
 README
-t/MoralMazePodcaster.t
-lib/MoralMazePodcaster.pm
+scripts/podmaze.pl
