@@ -25,7 +25,7 @@ chdir FILES_DIR;
 
 system('echo no | get-iplayer --get "moral maze" --type radio >/dev/null 2>/dev/null');
 
-my $rss = XML::RSS->(version => '2.0');
+my $rss = XML::RSS->new(version => '2.0');
 
 $rss->channel(
     title => 'BBC Radio 4 - Moral Maze',
